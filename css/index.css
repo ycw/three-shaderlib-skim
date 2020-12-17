@@ -1,0 +1,84 @@
+:root {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+code {
+    font: 1em monospace;
+    white-space: pre;
+    tab-size: 4;
+    -moz-tab-size: 4;
+    overflow: auto;
+    box-sizing: border-box;
+}
+
+code details:hover {
+    background: black;
+}
+
+summary {
+    cursor: pointer;
+}
+
+
+main {
+    display: grid;
+    grid-template: 
+        'url url' auto
+        'list sections' 1fr
+    / 1fr 80%;
+}
+
+.url {
+    grid-area: url;
+}
+
+.url input, 
+.url button {
+    padding: 1em;
+}
+
+.url-input {
+    width: 30%;
+}
+
+.shader-list {
+    grid-area: list;
+    padding: 1rem;
+}
+
+.shader-list > * {
+    position: sticky;
+    top: 1rem;
+    background: white;
+}
+
+.shader-list ul {
+    margin: 1rem 0 1rem 1rem;
+    display: flex;
+    flex-flow: column;
+    line-height: 1.2;
+}
+
+.shader-sections {
+    grid-area: sections;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.shader-section:not(:first-of-type) {
+    margin: 10rem 0 0 0;
+}
+
+.shader-section-head {
+    font: bold 2em serif;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: white;
+}
+
+.shader-section-subhead {
+    font: bold 1.2em serif;
+    margin: 1em 0;
+}
