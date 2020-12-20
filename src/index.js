@@ -1,4 +1,4 @@
-const URL = `//unpkg.com/three@0.123.0/build/three.module.js`;
+const DEFAULT_URL = '//unpkg.com/three@0.123.0/build/three.module.js';
 
 //
 // Main
@@ -12,9 +12,15 @@ const URL = `//unpkg.com/three@0.123.0/build/three.module.js`;
 
 
 function initAppState() {
-    document.querySelector('.url-input').value = URL;
+    fillUrl();
+
     document.querySelector('.url-form').addEventListener('submit', (e) => {
         e.preventDefault();
+        bootApp();
+    });
+
+    window.addEventListener('popstate', (e) => {
+        fillUrl();
         bootApp();
     });
 
@@ -34,6 +40,14 @@ function initAppState() {
 
 
 
+function fillUrl() {
+    const pars = new URLSearchParams(new URL(document.URL).search);
+    const url = pars.get('url') || DEFAULT_URL;
+    document.querySelector('.url-input').value = url;
+}
+
+
+
 async function bootApp() {
     toggleUrlControls(false);
     const url = document.querySelector('.url-input').value;
@@ -45,6 +59,7 @@ async function bootApp() {
         toggleUrlControls(true);
         return;
     }
+    history.pushState(null, '', `?url=${url}`); // bookmarkable
     renderHtml(THREE);
     toggleUrlControls(true);
 }
@@ -53,7 +68,7 @@ async function bootApp() {
 
 function toggleUrlControls(isToggle) {
     document.querySelector('.url-input').disabled = !isToggle;
-    document.querySelector('.url-button').disabled = !isToggle;
+    document.querySelector('.url-submit').disabled = !isToggle;
 }
 
 
@@ -132,7 +147,7 @@ function sanitizeShaderSource(shaderSource, ShaderChunk, indent = '') {
     for (const [i, line] of lines.entries()) {
         const match = line.match(/^(?<indent>\s*)#include\s+<\s*(?<chunk>.+?)\s*>$/);
         if (match) {
-            const { chunk, indent } = match.groups; 
+            const { chunk, indent } = match.groups;
             html.push(`<details><summary>${indent}// &lt;${chunk}&gt;</summary>`);
             html.push('<br/>');
             html.push(sanitizeShaderSource(ShaderChunk[chunk], ShaderChunk, indent));
