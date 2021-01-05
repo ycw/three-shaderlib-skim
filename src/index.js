@@ -34,6 +34,7 @@ async function bootApp() {
     const url = pars.get('url'); 
     if (url === null) { // re-direct
         location.href = `${location.origin}${location.pathname}?url=${DEFAULT_URL}`; 
+        return;
     }
     let THREE;
     try {
