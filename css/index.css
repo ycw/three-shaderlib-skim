@@ -4,7 +4,7 @@
 }
 
 code {
-    font: 1em monospace;
+    font: 1em/1.25 monospace;
     white-space: pre;
     tab-size: 4;
     -moz-tab-size: 4;
@@ -16,31 +16,41 @@ code details:hover {
     background: black;
 }
 
+
+/* summary */
+
+
 summary {
     cursor: pointer;
 }
+
+summary .actions a {
+    color: white;
+}
+
+summary .actions {
+    display: none;
+    padding: 0 1ch;
+}
+
+details:hover .actions {
+    display: unset;
+}
+
+
+/* main */
 
 
 main {
     display: grid;
     grid-template: 
-        'url url' auto
         'list sections' 1fr
     / 1fr 80%;
 }
 
-.url {
-    grid-area: url;
-}
 
-.url input, 
-.url button {
-    padding: 1em;
-}
+/* shader-list */
 
-.url-input {
-    width: 30%;
-}
 
 .shader-list {
     grid-area: list;
@@ -59,6 +69,10 @@ main {
     flex-flow: column;
     line-height: 1.2;
 }
+
+
+/* shader-sections */
+
 
 .shader-sections {
     grid-area: sections;

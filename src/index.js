@@ -1,10 +1,10 @@
-const DEFAULT_URL = '//unpkg.com/three@0.123.0/build/three.module.js';
+const DEFAULT_URL = '//unpkg.com/three/build/three.module.js';
 
 //
 // Main
 //
 
-(async function main() {
+(function main() {
     initAppState();
     bootApp();
 })();
@@ -12,17 +12,6 @@ const DEFAULT_URL = '//unpkg.com/three@0.123.0/build/three.module.js';
 
 
 function initAppState() {
-    fillUrl();
-
-    document.querySelector('.url-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        bootApp();
-    });
-
-    window.addEventListener('popstate', (e) => {
-        fillUrl();
-        bootApp();
-    });
 
     // ---- hljs ----
     // https://github.com/highlightjs/highlight.js/issues/2559
@@ -40,35 +29,17 @@ function initAppState() {
 
 
 
-function fillUrl() {
+async function bootApp() {
     const pars = new URLSearchParams(new URL(document.URL).search);
     const url = pars.get('url') || DEFAULT_URL;
-    document.querySelector('.url-input').value = url;
-}
-
-
-
-async function bootApp() {
-    toggleUrlControls(false);
-    const url = document.querySelector('.url-input').value;
     let THREE;
     try {
         THREE = await import(url);
     } catch (e) {
-        alert(`${e.message}`);
-        toggleUrlControls(true);
-        return;
+        return alert(`${e.message}`);
     }
-    history.pushState(null, '', `?url=${url}`); // bookmarkable
     renderHtml(THREE);
-    toggleUrlControls(true);
-}
-
-
-
-function toggleUrlControls(isToggle) {
-    document.querySelector('.url-input').disabled = !isToggle;
-    document.querySelector('.url-submit').disabled = !isToggle;
+    registerUIEvents(THREE);
 }
 
 
@@ -86,9 +57,50 @@ function renderHtml(THREE) {
 
 
 
+function registerUIEvents(THREE) {
+    document.addEventListener('click', (ev) => handleCopy(THREE, ev));
+}
+
+
+
+//
+// Handler - write shaderchunk content to clipboard
+// 
+
+
+
+function handleCopy(THREE, ev) {
+    const el = findCopyEl(ev.composedPath());
+    if (el) {
+        const chunkName = el.closest('details').dataset.shaderchunk;
+        const chunkContent = THREE.ShaderChunk[chunkName];
+        navigator.clipboard
+            .writeText(makeCopyText(chunkContent))
+            .then(() => onClipboardWriteFulfill(el));
+        ev.preventDefault();
+    }
+}
+
+function findCopyEl(evPath) {
+    return evPath.find(el => el.classList?.contains('copy'));
+}
+
+function makeCopyText(text) {
+    return text.replace(/\t/gm, ' '.repeat(4));
+}
+
+function onClipboardWriteFulfill(el) {
+    const oText = el.textContent;
+    el.textContent = 'copied';
+    setTimeout(() => el.textContent = oText, 1500);
+}
+
+
+
 //
 // Templates
 //
+
 
 
 function tmplShaderList(ShaderLib, revision) {
@@ -114,8 +126,8 @@ function tmplShaderSections(ShaderLib, ShaderChunk) {
 
 function tmplShaderSection(shaderName, shader, ShaderChunk) {
     const uniformNames = Object.keys(shader.uniforms);
-    const vertexShaderSource = sanitizeShaderSource(shader.vertexShader, ShaderChunk);
-    const fragmentShaderSource = sanitizeShaderSource(shader.fragmentShader, ShaderChunk);
+    const vertexShaderSource = shaderSourceToHtml(shader.vertexShader, ShaderChunk);
+    const fragmentShaderSource = shaderSourceToHtml(shader.fragmentShader, ShaderChunk);
 
     return `<div class='shader-section' id='${shaderName}'>
         <h3 class='shader-section-head'>${shaderName}</h3>
@@ -141,16 +153,22 @@ function tmplShaderSection(shaderName, shader, ShaderChunk) {
 // Shader Source -> HTML
 //
 
-function sanitizeShaderSource(shaderSource, ShaderChunk, indent = '') {
+
+
+function shaderSourceToHtml(shaderSource, ShaderChunk, indent = '') {
     const lines = shaderSource.trim().split('\n');
     const html = [];
     for (const [i, line] of lines.entries()) {
         const match = line.match(/^(?<indent>\s*)#include\s+<\s*(?<chunk>.+?)\s*>$/);
         if (match) {
             const { chunk, indent } = match.groups;
-            html.push(`<details><summary>${indent}// &lt;${chunk}&gt;</summary>`);
-            html.push('<br/>');
-            html.push(sanitizeShaderSource(ShaderChunk[chunk], ShaderChunk, indent));
+            html.push(`<details data-shaderchunk='${chunk}'>`);
+            html.push(`<summary>${indent}// &lt;${chunk}&gt;\
+<div class='actions'>\
+<a class='copy' href='#' title='write &lt;${chunk}&gt; content to clipboard'>Copy</a>\
+</div></summary>`);
+            html.push(`<br/>`);
+            html.push(shaderSourceToHtml(ShaderChunk[chunk], ShaderChunk, indent));
             html.push('<br/>');
             html.push('</details>');
         }
