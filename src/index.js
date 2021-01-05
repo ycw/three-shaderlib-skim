@@ -31,7 +31,10 @@ function initAppState() {
 
 async function bootApp() {
     const pars = new URLSearchParams(new URL(document.URL).search);
-    const url = pars.get('url') || DEFAULT_URL;
+    const url = pars.get('url'); 
+    if (url === null) { // re-direct
+        location.href = `${location.origin}${location.pathname}?url=${DEFAULT_URL}`; 
+    }
     let THREE;
     try {
         THREE = await import(url);
@@ -65,7 +68,7 @@ function registerUIEvents(THREE) {
 
 //
 // Handler - write shaderchunk content to clipboard
-// 
+//
 
 
 
