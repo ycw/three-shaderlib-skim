@@ -4,17 +4,35 @@ const DEFAULT_URL = '//unpkg.com/three/build/three.module.js';
 // Main
 //
 
-(function main() {
-    initAppState();
-    bootApp();
-})();
+(async function main() {
 
+    //// Determine threejs module url
 
+    const pars = new URLSearchParams(new URL(document.URL).search);
+    const url = pars.get('url');
+    if (url === null) {
+        return location.href = `${location.origin}${location.pathname}?url=${DEFAULT_URL}${location.hash}`;
+    }
 
-function initAppState() {
+    //// Load threejs
 
-    // ---- hljs ----
-    // https://github.com/highlightjs/highlight.js/issues/2559
+    let THREE;
+    try {
+        THREE = await import(url);
+    } catch (e) {
+        return alert(`${e.message}`);
+    }
+
+    //// Reg events 
+
+    document.addEventListener('click', (ev) => handleCopy(THREE, ev));
+    window.addEventListener('hashchange', (ev) => handleRoute(THREE, ev));
+    document.querySelector('.expand-all-vert').addEventListener('click', () => toggleChunks('vertex', true));
+    document.querySelector('.collapse-all-vert').addEventListener('click', () => toggleChunks('vertex', false));
+    document.querySelector('.expand-all-frag').addEventListener('click', () => toggleChunks('fragment', true));
+    document.querySelector('.collapse-all-frag').addEventListener('click', () => toggleChunks('fragment', false));
+
+    //// Setup hljs ( https://github.com/highlightjs/highlight.js/issues/2559 )
 
     const brPlugin = {
         "before:highlightBlock": ({ block }) => {
@@ -25,139 +43,111 @@ function initAppState() {
         }
     };
     hljs.addPlugin(brPlugin);
+
+    //// Render page 
+
+    const shaderName = location.hash.substr(1);
+    const shaderObject = THREE.ShaderLib[shaderName];
+    if (!shaderObject) {
+        const defaultShaderName = Object.keys(THREE.ShaderLib)[0];
+        return location.hash = defaultShaderName;
+    }
+    render(THREE, shaderName);
+
+})();
+
+//
+// Event handlers
+//
+
+function handleRoute(THREE, ev) {
+    const shaderName = location.hash.substr(1);
+    const shaderObject = THREE.ShaderLib[shaderName];
+    if (!shaderObject) {
+        const defaultShaderName = Object.keys(THREE.ShaderLib)[0];
+        return location.hash = defaultShaderName;
+    }
+    render(THREE, shaderName);
 }
 
-
-
-async function bootApp() {
-    const pars = new URLSearchParams(new URL(document.URL).search);
-    const url = pars.get('url'); 
-    if (url === null) { // re-direct
-        location.href = `${location.origin}${location.pathname}?url=${DEFAULT_URL}`; 
-        return;
+function handleCopy(THREE, ev) {
+    const el = ev.composedPath().find(el => el.classList?.contains('copy'));
+    if (el) {
+        const chunkName = el.closest('details').dataset.shaderchunk;
+        const chunkContent = THREE.ShaderChunk[chunkName];
+        const textToCopy = chunkContent.replace(/\t/gm, ' '.repeat(4));
+        navigator.clipboard
+            .writeText(textToCopy)
+            .then(() => {
+                const oText = el.textContent;
+                el.textContent = 'copied';
+                setTimeout(() => el.textContent = oText, 1500);
+            });
+        ev.preventDefault();
     }
-    let THREE;
-    try {
-        THREE = await import(url);
-    } catch (e) {
-        return alert(`${e.message}`);
-    }
-    renderHtml(THREE);
-    registerUIEvents(THREE);
 }
 
+function toggleChunks(kind, isToggle) {
+    const el = document.querySelector(`.${kind}`);
+    Array.from(el.querySelectorAll('details')).forEach(el => el.toggleAttribute('open', isToggle));
+    el.scrollIntoView({ behavior: 'auto', block: 'start' });
+}
 
+//
+// Render fns
+//
 
-function renderHtml(THREE) {
-    document.querySelector('.shader-list').innerHTML =
-        tmplShaderList(THREE.ShaderLib, THREE.REVISION);
+function render(THREE, shaderName) {
+    document.body.classList.add('render');
+    renderShaderList(THREE.ShaderLib, THREE.REVISION, shaderName);
+    renderShader(shaderName, THREE.ShaderLib[shaderName], THREE.ShaderChunk);
+}
 
-    document.querySelector('.shader-sections').innerHTML =
-        tmplShaderSections(THREE.ShaderLib, THREE.ShaderChunk);
+function renderShaderList(ShaderLib, revision, shaderName) {
+    document.querySelector('.shader-list').innerHTML = tmplShaderList(ShaderLib, revision, shaderName);
+}
+
+function renderShader(shaderName, shaderObject, ShaderChunk) {
+    document.querySelector('.name').innerHTML = shaderName;
+    document.querySelector('.uniforms').innerHTML = tmplUniforms(shaderObject.uniforms);
+    document.querySelector('.vertex').innerHTML = tmplShaderSource(shaderObject.vertexShader, ShaderChunk);
+    document.querySelector('.fragment').innerHTML = tmplShaderSource(shaderObject.fragmentShader, ShaderChunk);
+
+    //// highlight glsl code
 
     Array.from(document.querySelectorAll('code.language-glsl'))
         .forEach(el => hljs.highlightBlock(el));
 }
 
-
-
-function registerUIEvents(THREE) {
-    document.addEventListener('click', (ev) => handleCopy(THREE, ev));
-}
-
-
-
-//
-// Handler - write shaderchunk content to clipboard
-//
-
-
-
-function handleCopy(THREE, ev) {
-    const el = findCopyEl(ev.composedPath());
-    if (el) {
-        const chunkName = el.closest('details').dataset.shaderchunk;
-        const chunkContent = THREE.ShaderChunk[chunkName];
-        navigator.clipboard
-            .writeText(makeCopyText(chunkContent))
-            .then(() => onClipboardWriteFulfill(el));
-        ev.preventDefault();
-    }
-}
-
-function findCopyEl(evPath) {
-    return evPath.find(el => el.classList?.contains('copy'));
-}
-
-function makeCopyText(text) {
-    return text.replace(/\t/gm, ' '.repeat(4));
-}
-
-function onClipboardWriteFulfill(el) {
-    const oText = el.textContent;
-    el.textContent = 'copied';
-    setTimeout(() => el.textContent = oText, 1500);
-}
-
-
-
 //
 // Templates
 //
 
-
-
-function tmplShaderList(ShaderLib, revision) {
-    return `<div>
-        <h2>ShaderLib r${revision}</h2>
-        <ul>
-            ${Object.keys(ShaderLib).map(shaderName =>
-        `<li><a href='#${shaderName}'>${shaderName}</a></li>`
-    ).join('')}
-        </ul>
-    </div>`;
+function tmplShaderList(ShaderLib, revision, selectedShaderName) {
+    return `
+    <h1>ShaderLib r${revision}</h1>
+    <ul>${Object.keys(ShaderLib).map(shaderName => {
+        const classAttr = shaderName === selectedShaderName ? 'class="selected"' : '';
+        return `<li ${classAttr}><a href='#${shaderName}'>${shaderName}</a></li>`
+    }).join('')}</ul>
+    `;
 }
 
-
-
-function tmplShaderSections(ShaderLib, ShaderChunk) {
-    return `${Object.entries(ShaderLib).map(([name, shader]) =>
-        tmplShaderSection(name, shader, ShaderChunk)
-    ).join('')}`;
+function tmplUniforms(uniforms) {
+    const uniformNames = Object.keys(uniforms);
+    return `<ul class='shader-uniforms'>
+        ${uniformNames.map(u => `<li><a>${u}</a></li>`).join('')}
+    </ul>`;
 }
 
-
-
-function tmplShaderSection(shaderName, shader, ShaderChunk) {
-    const uniformNames = Object.keys(shader.uniforms);
-    const vertexShaderSource = shaderSourceToHtml(shader.vertexShader, ShaderChunk);
-    const fragmentShaderSource = shaderSourceToHtml(shader.fragmentShader, ShaderChunk);
-
-    return `<div class='shader-section' id='${shaderName}'>
-        <h3 class='shader-section-head'>${shaderName}</h3>
-        
-        <details>
-            <summary class='shader-section-subhead'>uniforms</summary>
-            <ul class='shader-uniforms'>
-                ${uniformNames.map(u => `<li><a>${u}</a></li>`).join('')}
-            </ul>
-        </details>
-
-        <h4 class='shader-section-subhead'>vert</h4>
-        <code class='language-glsl'>${vertexShaderSource}</code>
-        
-        <h4 class='shader-section-subhead'>frag</h4>
-        <code class='language-glsl'>${fragmentShaderSource}</code>
-    </div>`;
+function tmplShaderSource(shaderSource, ShaderChunk) {
+    const html = shaderSourceToHtml(shaderSource, ShaderChunk);
+    return `<code class='language-glsl'>${html}</code>`;
 }
-
-
 
 //
 // Shader Source -> HTML
 //
-
-
 
 function shaderSourceToHtml(shaderSource, ShaderChunk, indent = '') {
     const lines = shaderSource.trim().split('\n');
@@ -169,7 +159,7 @@ function shaderSourceToHtml(shaderSource, ShaderChunk, indent = '') {
             html.push(`<details data-shaderchunk='${chunk}'>`);
             html.push(`<summary>${indent}// &lt;${chunk}&gt;\
 <div class='actions'>\
-<a class='copy' href='#' title='write &lt;${chunk}&gt; content to clipboard'>Copy</a>\
+<a class='copy' href='#' title='Write &lt;${chunk}&gt; content to clipboard'>Copy</a>\
 </div></summary>`);
             html.push(`<br/>`);
             html.push(shaderSourceToHtml(ShaderChunk[chunk], ShaderChunk, indent));

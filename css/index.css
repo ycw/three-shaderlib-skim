@@ -3,6 +3,18 @@
     overflow-x: hidden;
 }
 
+
+/* body */
+
+
+body:not(.render) {
+    display: none;
+}
+
+
+/* code */
+
+
 code {
     font: 1em/1.25 monospace;
     white-space: pre;
@@ -44,7 +56,7 @@ details:hover .actions {
 main {
     display: grid;
     grid-template: 
-        'list sections' 1fr
+        'list shader' 100vh
     / 1fr 80%;
 }
 
@@ -57,42 +69,56 @@ main {
     padding: 1rem;
 }
 
-.shader-list > * {
-    position: sticky;
-    top: 1rem;
-    background: white;
-}
-
 .shader-list ul {
-    margin: 1rem 0 1rem 1rem;
+    margin: 1rem 0;
+    width: 100%;
     display: flex;
     flex-flow: column;
+    align-content: stretch;
     line-height: 1.2;
 }
 
-
-/* shader-sections */
-
-
-.shader-sections {
-    grid-area: sections;
-    padding: 1rem;
-    box-sizing: border-box;
+.shader-list a {
+    color: inherit;
 }
 
-.shader-section:not(:first-of-type) {
-    margin: 10rem 0 0 0;
+.shader-list li.selected {
+    color: gray;
 }
 
-.shader-section-head {
+
+/* shader */
+
+
+.shader {
+    grid-area: shader;
+    overflow-y: auto;
+    min-height: 100%;
+}
+
+.shader > h1 {
     font: bold 2em serif;
     position: sticky;
     top: 0;
     z-index: 1;
     background: white;
+    border-block-end: thin solid currentcolor;
 }
 
-.shader-section-subhead {
+.shader > h2 {
     font: bold 1.2em serif;
-    margin: 1em 0;
+    padding: 0.5em 0;
+    text-transform: capitalize;
+    position: sticky;
+    top: 2em;
+    background: white;
+}
+
+.shader .vertex, 
+.shader .fragment {
+    scroll-margin-block-start: 5.2em;
+}
+
+.shader > :last-child {
+    padding-block-end: 1em;
 }
