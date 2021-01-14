@@ -90,7 +90,7 @@ function handleCopy(THREE, ev) {
 function toggleChunks(kind, isToggle) {
     const el = document.querySelector(`.${kind}`);
     Array.from(el.querySelectorAll('details')).forEach(el => el.toggleAttribute('open', isToggle));
-    el.scrollIntoView({ behavior: 'auto', block: 'start' });
+    el.scrollIntoView();
 }
 
 //
@@ -101,6 +101,7 @@ function render(THREE, shaderName) {
     document.body.classList.add('render');
     renderShaderList(THREE.ShaderLib, THREE.REVISION, shaderName);
     renderShader(shaderName, THREE.ShaderLib[shaderName], THREE.ShaderChunk);
+    document.querySelector('.vertex').scrollIntoView();
 }
 
 function renderShaderList(ShaderLib, revision, shaderName) {
