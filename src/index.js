@@ -1,6 +1,8 @@
 (async function main() {
     const url = find_module_url();
-    url ?? (location.search = '?url=//unpkg.com/three/build/three.module.js');
+    if (url === null) {
+        return location.search = '?url=//unpkg.com/three/build/three.module.js';
+    }
 
     const { THREE, import_err } = await import_threejs(url);
     if (import_err) {
