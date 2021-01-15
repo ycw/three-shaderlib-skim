@@ -3,21 +3,57 @@
     overflow-x: hidden;
 }
 
+/* 
+body 
+*/
 
-/* body */
+body {
+    display: grid;
+    grid-template: 
+        'nav  shader' auto
+        'list shader' 1fr
+    /    20% 1fr; 
+    height: 100vh;
+    width: 100%;
+    gap: 1rem;
+    overflow: hidden;
+}
 
-
-body:not(.render) {
+body:not(.render) main {
     display: none;
 }
 
+/*
+nav
+*/
 
-/* code */
+nav {
+    grid-area: nav;
+    padding: 2em 0 0 2em;
+}
 
+nav ul {
+    display: grid;
+    grid-auto-flow: column;
+    place-content: center start;
+    gap: 1ch;
+    box-sizing: border-box;
+}
+
+/*
+main
+*/
+
+main {
+    display: contents;
+}
+
+/* 
+code 
+*/
 
 code {
     font: 1em/1.25 monospace;
-    white-space: pre;
     tab-size: 4;
     -moz-tab-size: 4;
     overflow: auto;
@@ -28,95 +64,99 @@ code details:hover {
     background: black;
 }
 
+pre code {
+    white-space: pre;
+}
 
-/* summary */
-
+/* 
+summary 
+*/
 
 summary {
     cursor: pointer;
+    list-style-type: none;
 }
 
-summary .actions a {
+summary::-webkit-details-marker {
+    display: none;
+}
+
+summary a {
     color: white;
+    text-decoration: underline;
 }
 
-summary .actions {
+summary .copy {
     display: none;
     padding: 0 1ch;
 }
 
-details:hover .actions {
+details:hover .copy {
     display: unset;
 }
 
-
-/* main */
-
-
-main {
-    display: grid;
-    grid-template: 
-        'list shader' 100vh
-    / 1fr 80%;
+details .end-tag {
+    cursor: pointer;
 }
 
+details {
+    scroll-margin-block-start: 8rem;
+}
 
-/* shader-list */
-
+/* 
+shader-list 
+*/
 
 .shader-list {
     grid-area: list;
-    padding: 1rem;
+    padding: 0 0 0 2rem;
 }
 
 .shader-list ul {
-    margin: 1rem 0;
     width: 100%;
-    display: flex;
-    flex-flow: column;
-    align-content: stretch;
     line-height: 1.2;
+}
+
+.shader-list h1 {
+    margin: 1rem 0;
 }
 
 .shader-list a {
     color: inherit;
 }
 
-.shader-list li.selected {
-    color: gray;
-}
-
-
-/* shader */
-
+/* 
+shader 
+*/
 
 .shader {
     grid-area: shader;
-    overflow-y: auto;
     min-height: 100%;
+    overflow-y: auto;
 }
 
 .shader > h1 {
-    font: bold 2em serif;
+    font: bold 2rem/1 serif;
     position: sticky;
     top: 0;
+    padding: 1rem 0;
     z-index: 1;
     background: white;
     border-block-end: thin solid currentcolor;
 }
 
 .shader > h2 {
-    font: bold 1.2em serif;
-    padding: 0.5em 0;
+    font-weight: bold;
+    padding: 1rem 0;
     text-transform: capitalize;
     position: sticky;
-    top: 2em;
+    top: 4rem;
     background: white;
 }
 
 .shader .vertex, 
 .shader .fragment {
-    scroll-margin-block-start: 5.2em;
+    scroll-margin-block-start: 8rem;
 }
 
 .shader > :last-child {

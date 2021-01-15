@@ -11,20 +11,25 @@
 </head>
 
 <body>
+    <nav>
+        <ul>
+            <li><a href='//github.com/ycw/three-shaderlib-skim'>Github</a></li>
+        </ul>
+    </nav>
     <main>
         <section class='shader-list'></section>
         <section class='shader'>
             <h1 class='name'></h1>
 
             <h2>vertex shader
-                <button class='expand-all-vert' title='Expand all shader chunks'>Expand all chunks</button>
-                <button class='collapse-all-vert' title='Collapse all shader chunks'>Collapse all chunks</button>
+                <button class='expand-all' data-kind='vertex'>Expand all includes</button>
+                <button class='collapse-all' data-kind='vertex'>Collapse all includes</button>
             </h2>
             <div class='vertex'></div>
             
             <h2>fragment shader
-                <button class='expand-all-frag' title='Expand all shader chunks'>Expand all chunks</button>
-                <button class='collapse-all-frag' title='Close all shader chunks'>Collapse all chunks</button>
+                <button class='expand-all' data-kind='fragment'>Expand all includes</button>
+                <button class='collapse-all' data-kind='fragment'>Collapse all includes</button>
             </h2>
             <div class='fragment'></div>
 
