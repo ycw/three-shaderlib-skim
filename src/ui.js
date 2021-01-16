@@ -60,9 +60,11 @@ export const ui = {
 
 function toggle_details(details_el, is_open) {
     const i_el = dom.el('i', details_el);
-    i_el.textContent = details_el.hasAttribute('open') ? '+' : '-';
-    i_el.classList.add('hljs-comment');
     if (is_open !== undefined) {
+        i_el.textContent = is_open ? '-' : '+';
         details_el.toggleAttribute('open', is_open);
+    } else {
+        i_el.textContent = details_el.hasAttribute('open') ? '+' : '-';
     }
+    i_el.classList.add('hljs-comment');
 }
