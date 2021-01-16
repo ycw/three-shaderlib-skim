@@ -89,7 +89,6 @@ nav > ul > li.head {
 }
 
 .dropdown > ul > li > a {
-    /* display: grid; */
     width: 100%;
     height: 100%;
     display: grid;
@@ -153,25 +152,20 @@ pre > code.hljs summary::-webkit-details-marker { display: none; }
 
 /** show/hide copy **/
 
-code summary .copy { 
+code.hljs > details > summary > .copy { 
     display: none; 
     padding: 0 1ch; 
     text-decoration: underline;
 }
 
-code details:hover .copy {
+code.hljs > details:hover > summary > .copy,
+code.hljs > details[open] > summary > .copy {
     display: unset;
-}
-
-/** on hover details **/
-
-code details:hover {
-    background: black;
 }
 
 /** cursor **/
 
-details summary,
-code details .end-tag {
+code.hljs > details > summary,
+code.hljs > details > .end-tag {
     cursor: pointer;
 }

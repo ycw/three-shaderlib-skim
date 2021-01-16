@@ -59,13 +59,13 @@ function tmpl_shader_source(src, ShaderChunk, indents = '') {
             const { chunk, indent } = match.groups;
             const ii = indents + indent;
             html.push(`<details data-chunk='${chunk}'>`);
-            html.push(`<summary>${ii}//<i>+</i> &lt;${chunk}&gt;`);
+            html.push(`<summary>${ii}// &lt;${chunk}&gt;`);
             html.push(`<a class='copy' title='Write to clipboard'>Copy</a>`);
             html.push(`</summary>`);
             html.push('\n');
             html.push(tmpl_shader_source(ShaderChunk[chunk], ShaderChunk, ii));
             html.push('\n');
-            html.push(`${ii}<a class='end-tag'>//- &lt;/${chunk}&gt;</a>`);
+            html.push(`${ii}<a class='end-tag'>// &lt;/${chunk}&gt;</a>`);
             html.push('\n');
             html.push('</details>');
         }

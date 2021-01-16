@@ -6,17 +6,17 @@ export const ui = {
 
     init_events: (ShaderLib, ShaderChunk) => {
 
-        window.addEventListener('hashchange', () => { console.log('hash chg')
+        window.addEventListener('hashchange', () => {
             const shader_name = router.get_shader_name(location.hash);
             const info_name = router.get_info_name(location.hash);
             view.render(ShaderLib, ShaderChunk, shader_name, info_name);
         });
 
-        document.addEventListener('pointerdown', (ev) => {
+        document.addEventListener('click', (ev) => {
             const path = ev.composedPath();
 
             if (path.find(x => x.classList?.contains('end-tag'))) {
-                path.find(x => x.nodeName === 'DETAILS').toggleAttribute('open', false);
+                toggle_details(path.find(x => x.nodeName === 'DETAILS'), false);
                 return;
             }
 
@@ -36,12 +36,11 @@ export const ui = {
 
             const summary_el = path.find(x => x.nodeName === 'SUMMARY');
             if (summary_el) {
-                const details_el = path.find(x => x.nodeName === 'DETAILS'); 
-                toggle_details(details_el);
-                return true;
+                const details_el = path.find(x => x.nodeName === 'DETAILS');
+                toggle_details(el);
+                return;
             }
 
-            
         });
 
         dom.el('.expand-all').addEventListener('click', (ev) => {
@@ -57,14 +56,6 @@ export const ui = {
 
 };
 
-
 function toggle_details(details_el, is_open) {
-    const i_el = dom.el('i', details_el);
-    if (is_open !== undefined) {
-        i_el.textContent = is_open ? '-' : '+';
-        details_el.toggleAttribute('open', is_open);
-    } else {
-        i_el.textContent = details_el.hasAttribute('open') ? '+' : '-';
-    }
-    i_el.classList.add('hljs-comment');
+    details_el.toggleAttribute('open', is_open);
 }
