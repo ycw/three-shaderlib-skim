@@ -3,6 +3,7 @@
 <head>
     <title>three-shaderlib-skim</title>
     <meta charset='utf8'>
+    <link rel='shortcut icon' href='#'>
     <link rel='stylesheet' href='css/reset.min.css'>
     <link rel='stylesheet' href='css/index.css'>
     <link rel='stylesheet' href='lib/highlight/styles/a11y-dark.css'>
@@ -13,28 +14,33 @@
 <body>
     <nav>
         <ul>
-            <li><a href='//github.com/ycw/three-shaderlib-skim'>Github</a></li>
+            <li class='head'>
+                <b>ShaderLib
+                    <span class='revision'><!-- dyn --></span>
+                    <a href=''>(github)</a>
+                </b>
+            </li>
+            <li class='dropdown'>
+                <a class='shader-name'><!-- dyn --></a>
+                <ul class='shader-list'>
+                    <!-- dyn -->
+                </ul>
+            </li>
+            <li class='dropdown'>
+                <a class='info-name'>
+                    <!-- dyn -->
+                </a>
+                <ul class='info-list'>
+                    <!-- dyn -->
+                </ul>
+            </li>
+            <li>
+                <ul class='control-list'>
+                    <li><a href='#' class='expand-all'>expand all includes</a></li>
+                    <li><a href='#' class='collapse-all'>collapse all includes</a></li>
+                </ul>
+            </li>
         </ul>
     </nav>
-    <main>
-        <section class='shader-list'></section>
-        <section class='shader'>
-            <h1 class='name'></h1>
-
-            <h2>vertex shader
-                <button class='expand-all' data-kind='vertex'>Expand all includes</button>
-                <button class='collapse-all' data-kind='vertex'>Collapse all includes</button>
-            </h2>
-            <div class='vertex'></div>
-            
-            <h2>fragment shader
-                <button class='expand-all' data-kind='fragment'>Expand all includes</button>
-                <button class='collapse-all' data-kind='fragment'>Collapse all includes</button>
-            </h2>
-            <div class='fragment'></div>
-
-            <h2>uniforms</h2>
-            <div class='uniforms'></div>
-        </section>
-    </main>
+    <pre class='shader-source'><code><!-- dyn --></code></pre>
 </body>

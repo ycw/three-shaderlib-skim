@@ -1,164 +1,177 @@
 :root {
-    scroll-behavior: smooth;
-    overflow-x: hidden;
+    --nav-block-size: 3rem;
+    --global-spacing: 2rem;
+    --global-border-style: thin solid #eee;
 }
-
-/* 
-body 
-*/
 
 body {
     display: grid;
     grid-template: 
-        'nav  shader' auto
-        'list shader' 1fr
-    /    20% 1fr; 
+        'nav' var(--nav-block-size)
+        'src' 1fr
+    / 100vw;
     height: 100vh;
-    width: 100%;
-    gap: 1rem;
     overflow: hidden;
 }
 
-body:not(.render) main {
-    display: none;
-}
-
-/*
-nav
-*/
-
 nav {
     grid-area: nav;
-    padding: 2em 0 0 2em;
+    height: 100%;
 }
 
-nav ul {
+nav > ul {
     display: grid;
-    grid-auto-flow: column;
-    place-content: center start;
-    gap: 1ch;
+    grid-template:
+        'head shader info controls' var(--nav-block-size)
+    /    1fr 1fr 1fr auto;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 1rem black;
+}
+
+nav > ul > li + li {
     box-sizing: border-box;
+    border: var(--global-border-style);
 }
 
-/*
-main
-*/
+/** head **/
 
-main {
-    display: contents;
+nav > ul > li.head {
+    grid-area: head;
+    display: grid;
+    place-content: center start;
+    padding-inline: var(--global-spacing);
 }
 
-/* 
-code 
-*/
+/** dropdown-able **/
 
-code {
-    font: 1em/1.25 monospace;
+.dropdown { position: relative; }
+.dropdown::before {
+    content: '▼';
+    position: absolute;
+    right: calc(var(--global-spacing) / 2);
+    top: 1rem;
+}
+
+.dropdown > a {
+    display: grid;
+    height: 100%;
+    width: 100%;
+    place-content: center start;
+    box-sizing: border-box;
+    padding: 0 var(--global-spacing);
+}
+
+.dropdown > a + ul {
+    display: none;
+    grid-template-columns: 100%;
+    place-content: start;
+    grid-auto-rows: var(--nav-block-size);
+
+    position: relative;
+    z-index: 1;
+
+    width: 100%;
+    max-height: calc(100vh - 2 * var(--nav-block-size));
+    overflow: auto;
+
+    background: white;
+}
+
+.dropdown > a:focus + ul,
+.dropdown > ul:hover {
+    display: grid;
+}
+
+.dropdown > ul > li {
+    display: grid;
+    width: 100%;
+}
+
+.dropdown > ul > li > a {
+    /* display: grid; */
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-content: center start;
+    box-sizing: border-box;
+    padding: 0 var(--global-spacing);
+}
+
+.dropdown a {
+    transition: 0.3s all;
+}
+.dropdown a:hover {
+    background: #eee;
+}
+
+/** controls **/
+
+.control-list {
+    grid-area: controls;
+    display: grid;
+    grid-template:
+        'expand-all collapse-all' 1fr
+    / auto auto;
+    height: 100%;
+    place-content: center end;
+    gap: var(--global-spacing);
+    box-sizing: border-box;
+    padding-inline: var(--global-spacing);
+}
+
+.control-list > * {
+    text-decoration: underline;
+    text-transform: capitalize;
+    display: grid;
+    place-content: center;
+}
+
+/** code.hljs **/
+
+pre.shader-source {
+    grid-area: src;
+    height: 100%;
+    overflow: hidden;
+}
+
+pre > code.hljs {
+    white-space: pre;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    font: 1em / 1.25 monospace;
     tab-size: 4;
     -moz-tab-size: 4;
-    overflow: auto;
     box-sizing: border-box;
 }
+
+/** disable summary marker **/
+
+pre > code.hljs summary { list-style-type: none; }
+pre > code.hljs summary::-webkit-details-marker { display: none; }
+
+/** show/hide copy **/
+
+code summary .copy { 
+    display: none; 
+    padding: 0 1ch; 
+    text-decoration: underline;
+}
+
+code details:hover .copy {
+    display: unset;
+}
+
+/** on hover details **/
 
 code details:hover {
     background: black;
 }
 
-pre code {
-    white-space: pre;
-}
+/** cursor **/
 
-/* 
-summary 
-*/
-
-summary {
+details summary,
+code details .end-tag {
     cursor: pointer;
-    list-style-type: none;
-}
-
-summary::-webkit-details-marker {
-    display: none;
-}
-
-summary a {
-    color: white;
-    text-decoration: underline;
-}
-
-summary .copy {
-    display: none;
-    padding: 0 1ch;
-}
-
-details:hover .copy {
-    display: unset;
-}
-
-details .end-tag {
-    cursor: pointer;
-}
-
-details {
-    scroll-margin-block-start: 8rem;
-}
-
-/* 
-shader-list 
-*/
-
-.shader-list {
-    grid-area: list;
-    padding: 0 0 0 2rem;
-}
-
-.shader-list ul {
-    width: 100%;
-    line-height: 1.2;
-}
-
-.shader-list h1 {
-    margin: 1rem 0;
-}
-
-.shader-list a {
-    color: inherit;
-}
-
-/* 
-shader 
-*/
-
-.shader {
-    grid-area: shader;
-    min-height: 100%;
-    overflow-y: auto;
-}
-
-.shader > h1 {
-    font: bold 2rem/1 serif;
-    position: sticky;
-    top: 0;
-    padding: 1rem 0;
-    z-index: 1;
-    background: white;
-    border-block-end: thin solid currentcolor;
-}
-
-.shader > h2 {
-    font-weight: bold;
-    padding: 1rem 0;
-    text-transform: capitalize;
-    position: sticky;
-    top: 4rem;
-    background: white;
-}
-
-.shader .vertex, 
-.shader .fragment {
-    scroll-margin-block-start: 8rem;
-}
-
-.shader > :last-child {
-    padding-block-end: 1em;
 }
