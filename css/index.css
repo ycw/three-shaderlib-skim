@@ -51,6 +51,7 @@ nav > ul > li.head {
     place-content: center start;
     box-sizing: border-box;
     padding: calc(var(--global-spacing) / 2) var(--global-spacing);
+    cursor: pointer;
 }
 
 .dropdown > details > ul {
