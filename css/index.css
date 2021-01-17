@@ -2,6 +2,12 @@
     --nav-block-size: 3rem;
     --global-spacing: 2rem;
     --global-border-style: thin solid #eee;
+    --splash-screen-fg: black;
+    --splash-screen-bg: white;
+    --code-toggle-icon-fg: #ddd;
+    --code-toggle-icon-bg: #222;
+    --code-toggle-icon-shadow: inset 1px -1px 2px -1px white;
+    --tab-size: 4;
 }
 
 body {
@@ -128,16 +134,12 @@ pre > code.hljs {
     height: 100%;
     width: 100%;
     overflow: auto;
-    font: 1em / 1.25 monospace;
-    tab-size: 4;
-    -moz-tab-size: 4;
+    font: 1em / 2 monospace;
+    tab-size: var(--tab-size);
+    -moz-tab-size: var(--tab-size);
     box-sizing: border-box;
+    padding-inline-start: 3ch;
 }
-
-/* disable summary marker */
-
-pre > code.hljs summary { list-style-type: none; }
-pre > code.hljs summary::-webkit-details-marker { display: none; }
 
 /* show/hide copy */
 
@@ -157,16 +159,6 @@ code.hljs > details[open] > summary > .copy {
 code.hljs > details > summary,
 code.hljs > details > .end-tag {
     cursor: pointer;
-}
-
-/* open/close includes */
-
-code.hljs > details .icon::before {
-    content: '+';
-    margin-inline-end: 1ch;
-}
-code.hljs > details[open] .icon::before {
-    content: '-';
 }
 
 /* hide double slashes */

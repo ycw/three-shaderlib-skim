@@ -58,6 +58,7 @@ function tmpl_info_list(info_name) {
 }
 
 function tmpl_shader_source(src, ShaderChunk, indents = '') {
+    const tab_size = getComputedStyle(dom.el('html')).getPropertyValue('--tab-size');
     const lines = src.trim().split('\n');
     const html = [];
     const re = /^(?<indent>\s*)#include\s+<\s*(?<chunk>.+?)\s*>$/;
@@ -66,15 +67,16 @@ function tmpl_shader_source(src, ShaderChunk, indents = '') {
         if (match) {
             const { chunk, indent } = match.groups;
             const ii = indents + indent;
+            const style = `margin-inline-start: ${ii.length * tab_size}ch`;
             html.push(`<details data-chunk="${chunk}">`);
-            html.push(`<summary>${ii}<i class="slash">//</i><i class="icon"></i>&lt;${chunk}&gt;`);
-            html.push('');
+            html.push(`<summary style="${style}">`);
+            html.push(`<i class="slash">//</i>&lt;${chunk}&gt;`);
             html.push('<a class="copy" title="Write to clipboard">Copy</a>');
             html.push('</summary>');
             html.push('\n');
             html.push(tmpl_shader_source(ShaderChunk[chunk], ShaderChunk, ii));
             html.push('\n');
-            html.push(`${ii}<a class="end-tag"><i class="slash">//</i><i class="icon"></i>&lt;/${chunk}&gt;</a>`);
+            html.push(`<a class="end-tag" style="${style}"><i class="slash">//</i>&lt;/${chunk}&gt;</a>`);
             html.push('\n');
             html.push('</details>');
         }
