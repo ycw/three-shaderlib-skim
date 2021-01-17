@@ -48,7 +48,7 @@ function tmpl_info_list(info_name) {
     return `
     ${['vertex', 'fragment'].map(v => {
         const anchor = (v === info_name) ? `<mark>${v}</mark>` : v;
-        return `<li class='item'>
+        return `<li>
             <a href='${router.replace_info_name(location.hash, v)}'>${anchor}</a>
         </li>`;
     }).join('')}
