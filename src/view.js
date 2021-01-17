@@ -6,6 +6,7 @@ export const view = {
     init_render: (ShaderLib, ShaderChunk, REVISION, shader_name, info_name) => {
         dom.el('.revision').innerHTML = `r${REVISION}`;
         view.render(ShaderLib, ShaderChunk, shader_name, info_name);
+        dom.el('body').classList.add('module-loaded');
     },
 
     render: (ShaderLib, ShaderChunk, shader_name, info_name) => {
@@ -23,8 +24,15 @@ export const view = {
         const el = dom.el('.shader-source code');
         el.innerHTML = tmpl_shader_source(src, ShaderChunk);
         hljs.highlightBlock(el);
-    }
+    },
 
+    render_splash_screen: (module_url) => {
+        dom.el('.splash-screen .module-url').textContent = module_url;
+    },
+
+    render_module_load_error: (err) => {
+        dom.el('.splash-screen .message').textContent = err.message;
+    }
 };
 
 function tmpl_shader_list(ShaderLib, shader_name) {

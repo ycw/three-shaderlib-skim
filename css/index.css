@@ -14,6 +14,8 @@ body {
     overflow: hidden;
 }
 
+/** nav **/
+
 nav {
     grid-area: nav;
     height: 100%;
@@ -34,7 +36,11 @@ nav > ul > li + li {
     border: var(--global-border-style);
 }
 
-/** head **/
+body:not(.module-loaded) > nav > ul > li:not(.head) {
+    display: none;
+}
+
+/** nav head **/
 
 nav > ul > li.head {
     grid-area: head;
@@ -128,12 +134,12 @@ pre > code.hljs {
     box-sizing: border-box;
 }
 
-/** disable summary marker **/
+/* disable summary marker */
 
 pre > code.hljs summary { list-style-type: none; }
 pre > code.hljs summary::-webkit-details-marker { display: none; }
 
-/** show/hide copy **/
+/* show/hide copy */
 
 code.hljs > details > summary > .copy { 
     display: none; 
@@ -146,14 +152,14 @@ code.hljs > details[open] > summary > .copy {
     display: unset;
 }
 
-/** cursor **/
+/* cursor */
 
 code.hljs > details > summary,
 code.hljs > details > .end-tag {
     cursor: pointer;
 }
 
-/** open/close details **/
+/* open/close includes */
 
 code.hljs > details .icon::before {
     content: '+';
@@ -163,8 +169,25 @@ code.hljs > details[open] .icon::before {
     content: '-';
 }
 
-/** hide double slashes */
+/* hide double slashes */
 
 code.hljs > details .slash {
+    display: none;
+}
+
+/** splash screen **/
+
+body > .splash-screen {
+    grid-area: src;
+    width: 100%;
+    height: 100%;
+    background: var(--splash-screen-bg);
+    color: var(--splash-screen-fg);
+    display: grid;
+    place-content: center;
+    place-items: center;
+}
+
+body.module-loaded > .splash-screen {
     display: none;
 }

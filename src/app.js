@@ -1,3 +1,4 @@
+import { dom } from './dom.js';
 import { router } from './router.js'
 import { ui } from './ui.js'
 import { view } from './view.js'
@@ -9,11 +10,13 @@ export const app = {
         const ver = router.get_module_version(hash);
         const url = `//unpkg.com/three@${ver}/build/three.module.js`;
 
+        view.render_splash_screen(url);
+
         let THREE;
         try {
             THREE = await import(url);
         } catch (e) {
-            alert(e.message);
+            view.render_module_load_error(e);
             return;
         }
 
