@@ -13,11 +13,9 @@ export const view = {
         const hash = location.hash;
 
         dom.el('.shader-name').textContent = shader_name;
-        dom.el('.shader-name').href = router.replace_shader_name(hash, shader_name);
         dom.el('.shader-list').innerHTML = tmpl_shader_list(ShaderLib, shader_name);
 
         dom.el('.info-name').textContent = info_name;
-        dom.el('.info-name').href = router.replace_info_name(hash, info_name);
         dom.el('.info-list').innerHTML = tmpl_info_list(info_name);
 
         const src = ShaderLib[shader_name][info_name + 'Shader'];
@@ -39,7 +37,7 @@ function tmpl_shader_list(ShaderLib, shader_name) {
     return `
     ${Object.keys(ShaderLib).map(k => {
         const anchor = (k === shader_name) ? `<mark>${k}</mark>` : k;
-        return `<li class='item' data-name='${k}'>
+        return `<li>
             <a href='${router.replace_shader_name(location.hash, k)}'>${anchor}</a>
         </li>`;
     }).join('')}
@@ -50,7 +48,7 @@ function tmpl_info_list(info_name) {
     return `
     ${['vertex', 'fragment'].map(v => {
         const anchor = (v === info_name) ? `<mark>${v}</mark>` : v;
-        return `<li class='item' data-name='${v}'>
+        return `<li class='item'>
             <a href='${router.replace_info_name(location.hash, v)}'>${anchor}</a>
         </li>`;
     }).join('')}
