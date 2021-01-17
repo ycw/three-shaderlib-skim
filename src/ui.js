@@ -10,6 +10,7 @@ export const ui = {
             const shader_name = router.get_shader_name(location.hash);
             const info_name = router.get_info_name(location.hash);
             view.render(ShaderLib, ShaderChunk, shader_name, info_name);
+            dom.els('.dropdown details').forEach(e => toggle_details(e, false));
         });
 
         document.addEventListener('click', (ev) => {

@@ -24,6 +24,8 @@ nav > ul {
     grid-template:
         'head shader info controls' var(--nav-block-size)
     /    1fr 1fr 1fr auto;
+    position: relative;
+    z-index: 1;
     box-shadow: 0 0 1rem black;
 }
 
@@ -41,28 +43,18 @@ nav > ul > li.head {
     padding-inline: var(--global-spacing);
 }
 
-/** dropdown-able **/
+/** dropdown lists **/
 
-.dropdown { position: relative; }
-.dropdown::before {
-    content: '▼';
-    position: absolute;
-    right: calc(var(--global-spacing) / 2);
-    top: 1rem;
-    pointer-events: none;
-}
-
-.dropdown > a {
-    display: grid;
+.dropdown > details > summary {
     height: 100%;
     width: 100%;
     place-content: center start;
     box-sizing: border-box;
-    padding: 0 var(--global-spacing);
+    padding: calc(var(--global-spacing) / 2) var(--global-spacing);
 }
 
-.dropdown > a + ul {
-    display: none;
+.dropdown > details > ul {
+    display: grid;
     grid-template-columns: 100%;
     place-content: start;
     grid-auto-rows: var(--nav-block-size);
@@ -74,29 +66,23 @@ nav > ul > li.head {
     background: white;
 }
 
-.dropdown > a:focus + ul,
-.dropdown > ul:hover {
-    display: grid;
-}
-
-.dropdown > ul > li {
+.dropdown > details > ul > li {
     display: grid;
     width: 100%;
 }
 
-.dropdown > ul > li > a {
+.dropdown > details > ul > li > a {
     width: 100%;
     height: 100%;
     display: grid;
     place-content: center start;
     box-sizing: border-box;
     padding: 0 var(--global-spacing);
-}
-
-.dropdown a {
     transition: 0.3s all;
 }
-.dropdown a:hover {
+
+.dropdown a:hover,
+.dropdown a:focus {
     background: #eee;
 }
 
