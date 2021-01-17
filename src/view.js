@@ -58,14 +58,15 @@ function tmpl_shader_source(src, ShaderChunk, indents = '') {
         if (match) {
             const { chunk, indent } = match.groups;
             const ii = indents + indent;
-            html.push(`<details data-chunk='${chunk}'>`);
-            html.push(`<summary>${ii}// &lt;${chunk}&gt;`);
-            html.push(`<a class='copy' title='Write to clipboard'>Copy</a>`);
-            html.push(`</summary>`);
+            html.push(`<details data-chunk="${chunk}">`);
+            html.push(`<summary>${ii}<i class="slash">//</i><i class="icon"></i>&lt;${chunk}&gt;`);
+            html.push('');
+            html.push('<a class="copy" title="Write to clipboard">Copy</a>');
+            html.push('</summary>');
             html.push('\n');
             html.push(tmpl_shader_source(ShaderChunk[chunk], ShaderChunk, ii));
             html.push('\n');
-            html.push(`${ii}<a class='end-tag'>// &lt;/${chunk}&gt;</a>`);
+            html.push(`${ii}<a class="end-tag"><i class="slash">//</i><i class="icon"></i>&lt;/${chunk}&gt;</a>`);
             html.push('\n');
             html.push('</details>');
         }

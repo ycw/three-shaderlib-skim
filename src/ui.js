@@ -34,13 +34,6 @@ export const ui = {
                 return;
             }
 
-            const summary_el = path.find(x => x.nodeName === 'SUMMARY');
-            if (summary_el) {
-                const details_el = path.find(x => x.nodeName === 'DETAILS');
-                toggle_details(el);
-                return;
-            }
-
         });
 
         dom.el('.expand-all').addEventListener('click', (ev) => {

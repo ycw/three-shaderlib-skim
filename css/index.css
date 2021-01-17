@@ -24,8 +24,6 @@ nav > ul {
     grid-template:
         'head shader info controls' var(--nav-block-size)
     /    1fr 1fr 1fr auto;
-    position: relative;
-    z-index: 1;
     box-shadow: 0 0 1rem black;
 }
 
@@ -51,6 +49,7 @@ nav > ul > li.head {
     position: absolute;
     right: calc(var(--global-spacing) / 2);
     top: 1rem;
+    pointer-events: none;
 }
 
 .dropdown > a {
@@ -67,9 +66,6 @@ nav > ul > li.head {
     grid-template-columns: 100%;
     place-content: start;
     grid-auto-rows: var(--nav-block-size);
-
-    position: relative;
-    z-index: 1;
 
     width: 100%;
     max-height: calc(100vh - 2 * var(--nav-block-size));
@@ -168,4 +164,20 @@ code.hljs > details[open] > summary > .copy {
 code.hljs > details > summary,
 code.hljs > details > .end-tag {
     cursor: pointer;
+}
+
+/** open/close details **/
+
+code.hljs > details .icon::before {
+    content: '+';
+    margin-inline-end: 1ch;
+}
+code.hljs > details[open] .icon::before {
+    content: '-';
+}
+
+/** hide double slashes */
+
+code.hljs > details .slash {
+    display: none;
 }
