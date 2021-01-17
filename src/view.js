@@ -20,7 +20,8 @@ export const view = {
 
         const src = ShaderLib[shader_name][info_name + 'Shader'];
         const el = dom.el('.shader-source code');
-        el.innerHTML = tmpl_shader_source(src, ShaderChunk);
+        const tab_size = getComputedStyle(dom.el('html')).getPropertyValue('--tab-size');
+        el.innerHTML = tmpl_shader_source(src, ShaderChunk, tab_size);
         hljs.highlightBlock(el);
     },
 
@@ -55,31 +56,30 @@ function tmpl_info_list(info_name) {
     `;
 }
 
-function tmpl_shader_source(src, ShaderChunk, indents = '') {
-    const tab_size = getComputedStyle(dom.el('html')).getPropertyValue('--tab-size');
+function tmpl_shader_source(src, ShaderChunk, tab_size, tab_count = 0) {
     const lines = src.trim().split('\n');
     const html = [];
-    const re = /^(?<indent>\s*)#include\s+<\s*(?<chunk>.+?)\s*>$/;
+    const re = /^(?<tab>\t*)#include\s+<\s*(?<chunk>.+?)\s*>$/;
     for (const line of lines) {
         const match = line.match(re);
         if (match) {
-            const { chunk, indent } = match.groups;
-            const ii = indents + indent;
-            const style = `margin-inline-start: ${ii.length * tab_size}ch`;
+            const { chunk, tab } = match.groups;
+            const t = tab_count + tab.length;
+            const style = `margin-inline-start: ${t * tab_size}ch`;
             html.push(`<details data-chunk="${chunk}">`);
             html.push(`<summary style="${style}">`);
             html.push(`<i class="slash">//</i>&lt;${chunk}&gt;`);
             html.push('<a class="copy" title="Write to clipboard">Copy</a>');
             html.push('</summary>');
             html.push('\n');
-            html.push(tmpl_shader_source(ShaderChunk[chunk], ShaderChunk, ii));
+            html.push(tmpl_shader_source(ShaderChunk[chunk], ShaderChunk, tab_size, t));
             html.push('\n');
             html.push(`<a class="end-tag" style="${style}"><i class="slash">//</i>&lt;/${chunk}&gt;</a>`);
             html.push('\n');
             html.push('</details>');
         }
         else {
-            html.push(indents);
+            html.push('\t'.repeat(tab_count));
             html.push(line.replace(/</g, '&lt;').replace(/>/g, '&gt;'));
             html.push('\n');
         }
