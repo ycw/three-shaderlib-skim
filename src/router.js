@@ -8,7 +8,7 @@ export const router = {
 
     get_shader_name: (hash) => {
         const [, , name] = hash.split('/');
-        return name || '';
+        return name;
     },
 
     get_info_name: (hash) => {
@@ -34,6 +34,10 @@ export const router = {
     replace_info_name: (hash, info_name) => {
         const [, ver, shader_name,] = hash.split('/');
         return `#/${ver}/${shader_name}/${info_name}`;
+    },
+
+    is_route_qualified: (hash) => {
+        return /#\/(latest|\d+\.\d+\.\d+)\/[^/]+\/[^/]+/.test(hash);
     },
 
     redirect: (ver, shader_name, info_name) => {

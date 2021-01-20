@@ -5,20 +5,22 @@ export const view = {
 
     init_render: (ShaderLib, ShaderChunk, REVISION, shader_name, info_name) => {
         dom.el('.revision').innerHTML = `r${REVISION}`;
-        view.render(ShaderLib, ShaderChunk, shader_name, info_name);
-        dom.el('body').classList.add('module-loaded');
+        view.render_shader_dropdown(ShaderLib, shader_name);
+        view.render_info_dropdown(info_name);
+        view.render_shader_source(ShaderLib[shader_name][info_name + 'Shader'], ShaderChunk);        
     },
-
-    render: (ShaderLib, ShaderChunk, shader_name, info_name) => {
-        const hash = location.hash;
-
+    
+    render_shader_dropdown: (ShaderLib, shader_name) => {
         dom.el('.shader-name').textContent = shader_name;
         dom.el('.shader-list').innerHTML = tmpl_shader_list(ShaderLib, shader_name);
+    },
 
+    render_info_dropdown: (info_name) => {
         dom.el('.info-name').textContent = info_name;
         dom.el('.info-list').innerHTML = tmpl_info_list(info_name);
+    },
 
-        const src = ShaderLib[shader_name][info_name + 'Shader'];
+    render_shader_source: (src, ShaderChunk) => {
         const el = dom.el('.shader-source code');
         const tab_size = getComputedStyle(dom.el('html')).getPropertyValue('--tab-size');
         el.innerHTML = tmpl_shader_source(src, ShaderChunk, tab_size);

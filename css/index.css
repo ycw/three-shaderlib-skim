@@ -39,7 +39,18 @@ nav > ul > li + li {
     border: var(--global-border-style);
 }
 
-body:not(.module-loaded) > nav > ul > li:not(.head) {
+body:not(.module-loaded) > nav > ul > li:not(.head),
+body:not(.valid-query) > nav > ul > li:not(.head) {
+    display: none;
+}
+
+body:not(.module-loaded) > nav > ul > li.head .revision,
+body:not(.valid-query) > nav > ul > li.head .revision {
+    display: none;
+}
+
+body:not(.module-loaded) > .shader-source,
+body:not(.valid-query) > .shader-source {
     display: none;
 }
 
