@@ -19,8 +19,8 @@ function toggle_details(details_el, is_open) {
 }
 
 async function handle_hash_change(ev, app) {
-    const old_hash = new URL(ev.oldURL).hash;
     const new_hash = new URL(ev.newURL).hash;
+    const old_hash = new URL(ev.oldURL).hash;
 
     const new_ver = router.get_module_version(new_hash);
     const old_ver = router.get_module_version(old_hash);
@@ -40,15 +40,12 @@ async function handle_hash_change(ev, app) {
     if (!app.validate_query(new_shader_name, new_info_name)) {
         return;
     }
-    
+
     const { ShaderLib, ShaderChunk } = app.state.THREE;
     const old_shader_name = router.get_shader_name(old_hash);
-    if (old_shader_name !== new_shader_name) {    
-        view.render_shader_dropdown(ShaderLib, new_shader_name);
-    }
-
     const old_info_name = router.get_info_name(old_hash);
-    if (old_info_name !== new_info_name) {
+    if (old_shader_name !== new_shader_name || old_info_name !== new_info_name) {    
+        view.render_shader_dropdown(ShaderLib, new_shader_name);
         view.render_info_dropdown(new_info_name);
     }
 
