@@ -7,37 +7,37 @@ export const router = {
     },
 
     get_shader_name: (hash) => {
-        const [, , name] = hash.split('/');
-        return name;
+        const [, , shader_name] = hash.split('/');
+        return shader_name;
     },
 
     get_info_name: (hash) => {
-        const [, , , info] = hash.split('/');
-        return info;
+        const [, , , info_name] = hash.split('/');
+        return info_name;
     },
 
     set_shader_name: (hash, shader_name) => {
-        const [, ver, , info_name] = hash.split('/');
+        const ver = router.get_module_version(hash);
+        const info_name = router.get_info_name(hash);
         router.redirect(ver, shader_name, info_name);
     },
 
     set_info_name: (hash, info_name) => {
-        const [, ver, shader_name, ] = hash.split('/');
+        const ver = router.get_module_version(hash);
+        const shader_name = router.get_shader_name(hash);
         router.redirect(ver, shader_name, info_name);
     },
 
     replace_shader_name: (hash, shader_name) => {
-        const [, ver, , info_name] = hash.split('/');
+        const ver = router.get_module_version(hash);
+        const info_name = router.get_info_name(hash);
         return `#/${ver}/${shader_name}/${info_name}`;
     },
 
     replace_info_name: (hash, info_name) => {
-        const [, ver, shader_name,] = hash.split('/');
+        const ver = router.get_module_version(hash);
+        const shader_name = router.get_shader_name(hash);
         return `#/${ver}/${shader_name}/${info_name}`;
-    },
-
-    is_route_qualified: (hash) => {
-        return /#\/(latest|\d+\.\d+\.\d+)\/[^/]+\/[^/]+/.test(hash);
     },
 
     redirect: (ver, shader_name, info_name) => {
