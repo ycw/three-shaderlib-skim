@@ -7,9 +7,17 @@ export const ui = {
 
     init_events: (app) => {
         window.addEventListener('hashchange', (ev) => handle_hash_change(ev, app));
-        document.addEventListener('click', handle_click_document);
+        document.addEventListener('click', (ev) => handle_click_document(ev, app));
         dom.el('.expand-all').addEventListener('click', handle_click_expand_all);
         dom.el('.collapse-all').addEventListener('click', handle_click_collapse_all);
+        dom.els('.dropdown').forEach(e => {
+            e.addEventListener('pointerleave', handle_pointerleave_dropdown);
+            e.addEventListener('pointerenter', handle_pointerenter_dropdown);
+        });
+    },
+
+    toggle_nav_dropdowns: (is_open) => {
+        dom.els('nav .dropdown > details').forEach(el => toggle_details(el, is_open));
     }
 
 };
@@ -34,44 +42,22 @@ async function handle_hash_change(ev, app) {
         await app.load_module(new_ver);
         return;
     }
-    
-    const new_shader_name = router.get_shader_name(new_hash);
-    const new_info_name = router.get_info_name(new_hash);
-    if (!app.validate_query(new_shader_name, new_info_name)) {
-        return;
-    }
 
-    const { ShaderLib, ShaderChunk } = app.state.THREE;
-    const old_shader_name = router.get_shader_name(old_hash);
-    const old_info_name = router.get_info_name(old_hash);
-    if (old_shader_name !== new_shader_name || old_info_name !== new_info_name) {    
-        view.render_shader_dropdown(ShaderLib, new_shader_name);
-        view.render_info_dropdown(new_info_name);
-    }
-
-    view.render_shader_source(ShaderLib[new_shader_name][new_info_name + 'Shader'], ShaderChunk);
-    dom.els('.dropdown details').forEach(e => toggle_details(e, false));
+    app.route(new_hash);
+    ui.toggle_nav_dropdowns(false);
 }
 
-function handle_click_document(ev) {
+function handle_click_document(ev, app) {
     const path = ev.composedPath();
 
     if (path.find(x => x.classList?.contains('end-tag'))) {
-        toggle_details(path.find(x => x.nodeName === 'DETAILS'), false);
+        handle_click_end_tag(ev, path);
         return;
     }
 
     const copy_el = path.find(x => x.classList?.contains('copy'));
     if (copy_el) {
-        const details = path.find(x => x.nodeName === 'DETAILS');
-        const { chunk } = details.dataset;
-        navigator.clipboard.writeText(ShaderChunk[chunk])
-            .then(() => {
-                const old = copy_el.textContent;
-                copy_el.textContent = 'Copied!';
-                setTimeout(() => copy_el.textContent = old, 1000);
-            });
-        ev.preventDefault();
+        handle_click_copy(ev, path, copy_el, app);
         return;
     }
 }
@@ -84,4 +70,28 @@ function handle_click_expand_all(ev) {
 function handle_click_collapse_all(ev) {
     dom.els('.shader-source code details').forEach(el => toggle_details(el, false));
     ev.preventDefault();
+}
+
+function handle_click_copy(ev, path, copy_el, app) {
+    const details = path.find(x => x.nodeName === 'DETAILS');
+    const { chunk } = details.dataset;
+    navigator.clipboard.writeText(app.state.THREE.ShaderChunk[chunk])
+        .then(() => {
+            const old = copy_el.textContent;
+            copy_el.textContent = 'Copied!';
+            setTimeout(() => copy_el.textContent = old, 1000);
+        }, console.error);
+    ev.preventDefault();
+}
+
+function handle_click_end_tag(ev, path) {
+    toggle_details(path.find(x => x.nodeName === 'DETAILS'), false);
+}
+
+function handle_pointerenter_dropdown(ev) { 
+    toggle_details(ev.target.querySelector('details'), true);
+}
+
+function handle_pointerleave_dropdown(ev) { 
+    toggle_details(ev.target.querySelector('details'), false);
 }
