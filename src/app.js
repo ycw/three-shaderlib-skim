@@ -15,7 +15,7 @@ export const app = {
     },
 
     load_module: async (ver) => {
-        const url = `https://unpkg.com/three@${ver}/build/three.module.js`;
+        const url = `https://cdn.skypack.dev/three@${ver}/build/three.module.js?min`;
         view.render_splash_screen(url);
         dom.el('body').classList.remove('module-loaded');
 
