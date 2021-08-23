@@ -29,7 +29,7 @@
               <option v-for='shader in shaders' :key='shader' :value='shader'>{{shader}}</option>
             </select>
           </dd>
-          <dt v-if='bootedVersion' id='label-kind'>kind</dt>
+          <dt id='label-kind'>kind</dt>
           <dd>
             <select @change='onkind' v-model='kind'>
               <option v-for='kind in kinds' :key='kind' :value='kind'>{{kind}}</option>
