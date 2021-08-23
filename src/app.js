@@ -1,77 +1,177 @@
-import { dom } from './dom.js';
-import { router } from './router.js'
-import { ui } from './ui.js'
-import { view } from './view.js'
+import { Router } from './router.js'
 
-export const app = {
+const codeMap = new Map(); // Map<`shader.kind`, parsedhtmlcode>
+let THREE = null;
 
-    state: {
-        THREE: null,
-    },
 
-    init: async () => {
-        ui.init_events(app);
-        await app.load_module(router.get_module_version(location.hash));
-    },
 
-    load_module: async (ver) => {
-        const url = `https://cdn.skypack.dev/three@${ver}/build/three.module.js?min`;
-        view.render_splash_screen(url);
-        dom.el('body').classList.remove('module-loaded');
-
-        let new_THREE;
-        try {
-            new_THREE = await import(url);
-        } catch (e) {
-            view.render_module_load_error(e);
-            return;
-        }
-
-        app.state.THREE = new_THREE;
-        dom.el('body').classList.add('module-loaded');
-        app.route(location.hash);
-    },
-
-    route: (hash) => {
-        const shader_name = router.get_shader_name(hash) || app.default_shader_name;
-        const info_name = router.get_info_name(hash) || app.default_info_name;
-        if (app.validate_query(shader_name, info_name)) {
-            const { ShaderLib, ShaderChunk, REVISION } = app.state.THREE;
-            view.init_render(ShaderLib, ShaderChunk, REVISION, shader_name, info_name);
-            router.redirect(router.get_module_version(hash), shader_name, info_name);
-        }
-    },
-
-    validate_query: (shader_name, info_name) => {
-        const errors = [];
-
-        if (!app.state.THREE) {
-            errors.push('Threejs is not loaded');
-        }
-
-        if (!Object.prototype.hasOwnProperty.call(app.state.THREE.ShaderLib, shader_name)) {
-            errors.push(`Shader("${shader_name}") is not in ShaderLib`);
-        }
-
-        if (!(['vertex', 'fragment'].find(x => x === info_name))) {
-            errors.push(`Info("${info_name}") is not "vertex" nor "fragment"`);
-        }
-
-        if (errors.length) {
-            dom.el('body').classList.remove('valid-query');
-            alert(`Errors:\n${errors.map(e => `- ${e}`).join('\n')}`);
-            return false;
-        }
-
-        dom.el('body').classList.add('valid-query');
-        return true;
-    },
-
-    get default_shader_name() {
-        return Object.keys(app.state.THREE.ShaderLib)[0];
-    },
-
-    get default_info_name() {
-        return 'vertex';
+export const App = {
+  template: document.querySelector('#tmpl-body'),
+  data() {
+    return {
+      booted: false,
+      bootedVersion: '',
+      booting: {
+        version: '',
+        shader: '',
+        kind: ''
+      },
+      kinds: ['vertex', 'fragment'],
+      shaders: [],
+      version: '',
+      kind: '',
+      shader: '',
+      code: '',
+      themes: ['light', 'dark'],
+      theme: '',
     }
+  },
+  async mounted() {
+    if (matchMedia('(prefers-color-scheme: dark)').matches) this.theme = 'dark';
+    window.onhashchange = async () => await reboot(this);
+    await reboot(this);
+  },
+  methods: {
+    onshader() {
+      Router.update(this.version, this.shader, this.kind);
+    },
+    onkind() {
+      Router.update(this.version, this.shader, this.kind);
+    },
+    async onversion() {
+      Router.update(this.version, this.shader, this.kind);
+    },
+    oncode(e) {
+      toggleFold(e.target);
+    },
+    onunfold() {
+      foldAll(false);
+    },
+    onfold() {
+      foldAll(true);
+    }
+  }
 };
+
+
+
+async function reboot(vm) {
+
+  if (vm.booting.version) return;
+
+  const r = Router.current();
+
+  r.version = r.version || 'latest';
+  r.shader = r.shader || '';
+  r.kind = r.kind || '';
+
+  // ---- when ( states outsync route )
+  if (r.version !== vm.version || r.shader !== vm.shader || r.kind !== vm.kind) {
+    vm.version = r.version;
+    vm.shader = r.shader;
+    vm.kind = r.kind;
+    Router.update(r.version, r.shader, r.kind);
+  }
+
+  vm.booting.version = r.version;
+  vm.booting.shader = r.shader;
+  vm.booting.kind = r.kind;
+  vm.booted = false;
+  vm.bootedVersion = '';
+
+  // ---- handle /version part
+  let success;
+  if (r.version === vm.bootedVersion) {
+    success = true;
+  } else {
+    codeMap.clear();
+    vm.code = '';
+    try {
+      THREE = await import(`https://cdn.skypack.dev/three@${vm.booting.version}/build/three.module.js?min`);
+      success = true;
+    } catch (e) {
+      console.error(e);
+      alert(`Failed to load "npm/three@${r.version}" from skypack CDN`);
+      success = false;
+    }
+  }
+
+  if (success) {
+    vm.shaders = Object.keys(THREE.ShaderLib);
+    vm.version = vm.bootedVersion = vm.booting.version;
+    vm.shader = vm.shaders.find(x => x === vm.booting.shader) ? vm.booting.shader : vm.shaders[0];
+    vm.kind = vm.kinds.find(x => x === vm.booting.kind) ? vm.booting.kind : vm.kinds[0];
+
+    // ---- handle '/sahder/kind' part
+    if (r.shader !== vm.shader || r.kind !== vm.kind) {
+      Router.update(vm.version, vm.shader, vm.kind);
+    } else {
+      codeMap.clear();
+      vm.code = hl(vm.shader, vm.kind);
+      vm.$refs['pre-code'].scrollTop = 0;
+    }
+  }
+
+  // ---- reset
+  vm.booting.version = '';
+  vm.booting.shader = '';
+  vm.booting.kind = '';
+  vm.booted = true;
+}
+
+
+
+function foldAll(isFold = false) {
+  const el = document.querySelector('#pre-code code');
+  for (const e of el.querySelectorAll('[class*=incl]')) {
+    e.classList.toggle('open', !isFold);
+  }
+}
+
+
+
+function toggleFold(el) {
+  if (el.classList.contains('incl')) {
+    el.classList.toggle('open');
+  } else if (el.parentElement?.classList.contains('incl')) {
+    el.parentElement.classList.toggle('open');
+  }
+}
+
+
+function hl(shader, kind) {
+  const key = `${shader}.${kind}`;
+  if (codeMap.has(key)) {
+    return codeMap.get(key);
+  }
+  const code = _hl(THREE.ShaderLib[shader][`${kind}Shader`]);
+  codeMap.set(key, code);
+  return code;
+}
+
+function _hl(glsl, indent = '') {
+  const html = Prism.highlight(glsl, Prism.languages.glsl, 'glsl');
+  const rows = html.split('\n');
+  const result = [];
+  const dummy = document.createElement('div');
+  for (const row of rows) {
+    dummy.innerHTML = row;
+    const incl = dummy.querySelector('[class*=macro]>[class*=string]');
+    if (incl) {
+      const ind = `${indent}${row.match(/^\t{0,}/)?.[0] || ''}`;
+      const glsl = THREE.ShaderChunk[incl.textContent.replace(/[><]/g, '')]
+        .split('\n').map(row => `${ind}${row}`).join('\n');
+      incl.parentElement.classList.add('incl');
+      incl.parentElement.append(document.createElement('br'));
+      const el = document.createElement('span');
+      el.classList.add('incl-content');
+      el.innerHTML = _hl(glsl, ind);
+      dummy.append(el);
+      result.push(dummy.innerHTML);
+    }
+    else {
+      result.push(row);
+    }
+  }
+  return result.join('\n');
+}

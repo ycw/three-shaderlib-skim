@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>three-shaderlib-skim</title>
+  <meta charset='utf8'>
+  <link rel='icon' href='data:,'>
+  <link rel='stylesheet' href='../lib/reset/reset.min.css'>
+  <link rel='stylesheet' href='../lib/prism/prism-bare.css'>
+  <link rel='stylesheet' href='./index.css'>
+  <script src='../lib/prism/prism.js'></script>
+  <script type='module' src='./index.js' defer></script>
+  <template id='tmpl-body'>
+    <main :class='{ "dark-theme": theme === "dark" }'>
+      <h1>
+        <a href='//github.com/ycw/three-shaderlib-skim'>repo</a>
+      </h1>
+      <nav v-if='booted'>
+        <dl>
+          <dt id='label-lib'>npm/three@</dt>
+          <dd>
+            <input type='text' v-model='version' @change='onversion'>
+          </dd>
+        </dl>
+        <dl v-if='bootedVersion'>
+          <dt id='label-shader'>Shader</dt>
+          <dd>
+            <select @change='onshader' v-model='shader'>
+              <option v-for='shader in shaders' :key='shader' :value='shader'>{{shader}}</option>
+            </select>
+          </dd>
+          <dt v-if='bootedVersion' id='label-kind'>kind</dt>
+          <dd>
+            <select @change='onkind' v-model='kind'>
+              <option v-for='kind in kinds' :key='kind' :value='kind'>{{kind}}</option>
+            </select>
+          </dd>
+          <dt id='label-macros'>Macros</dt>
+          <dd>
+            <button @click='onunfold'>Unfold All</button>
+            <button @click='onfold'>Fold All</button>
+          </dd>
+          <dt id='label-theme'>Theme</dt>
+          <dd>
+            <select v-model='theme'>
+              <option v-for='theme in themes'>{{theme}}</option>
+            </select>
+          </dd>
+        </dl>
+      </nav>
+      <pre id='pre-code' ref='pre-code'><code v-html='code' class='language-glsl' @click='oncode'></code></pre>
+    </main>
+  </template>
+</head>
+
+<body id='app'></body>
+
+</html>
