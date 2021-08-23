@@ -38,7 +38,7 @@ export const App = {
     onkind() {
       Router.update(this.version, this.shader, this.kind);
     },
-    async onversion() {
+    onversion() {
       Router.update(this.version, this.shader, this.kind);
     },
     oncode(e) {
@@ -137,6 +137,7 @@ function toggleFold(el) {
     el.parentElement.classList.toggle('open');
   }
 }
+
 
 
 function hl(shader, kind) {
