@@ -23,7 +23,7 @@ export const App = {
       shader: '',
       code: '',
       themes: ['light', 'dark'],
-      theme: '',
+      theme: 'light',
     }
   },
   async mounted() {
