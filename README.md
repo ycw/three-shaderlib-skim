@@ -1,6 +1,6 @@
 # About
 
-To skim threejs shaderlib glsl source w/ folable shader chunks.
+To skim threejs shaderlib glsl sources with foldable shader chunks.
 
 👁️👄👁️ 👉🏻 https://ycw.github.io/three-shaderlib-skim/dist/
 
