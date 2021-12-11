@@ -1,0 +1,21 @@
+{
+  "name": "three-shaderlib-skim",
+  "version": "0.0.0",
+  "author": "ycw (https://github.com/ycw)",
+  "homepage": "https://github.com/ycw/three-shaderlib-skim",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "pinia": "^2.0.6",
+    "prismjs": "^1.25.0",
+    "vue": "^3.2.24",
+    "vue-router": "^4.0.12"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.10.2",
+    "vite": "^2.7.1"
+  }
+}

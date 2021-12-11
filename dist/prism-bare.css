@@ -7,7 +7,7 @@
 
 :root {
 	--prism-fg: #222;
-	--prims-bg: #fff;
+	--prism-bg: #fff;
 	--prism-select-bg: #b3d4fc;
 	--prism-tk-comment: slategray;
 	--prism-tk-punc: #999;
@@ -19,7 +19,7 @@
 	--prism-tk-var: #e90;
 }
 
-.dark-theme {
+.dark {
 	--prism-fg: #d4d4d4;
 	--prism-bg: #1e1e1e;
 	--prism-select-bg: #67798d;

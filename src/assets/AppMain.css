@@ -1,0 +1,125 @@
+.host {
+  --fg: #222;
+  --bg: #fff;
+  --bg2: #eee;
+}
+
+.dark {
+  --fg: #ddd;
+  --bg: #1e1e1e;
+  --bg2: #2e2e2e;
+}
+
+
+/* --- */
+
+main, 
+nav {
+  color: var(--fg);
+  background: var(--bg);
+}
+
+a {
+  color: var(--fg);
+}
+
+main {
+  font: 1rem monospace;
+  display: grid;
+  grid-template:
+    'widgets code' auto 
+    'nav     code' 1fr 
+  / 22ch 1fr;
+  height: 100vh;
+  width: 100%;
+}
+
+select,
+input,
+button,
+option {
+  display: block;
+  padding: 1rem;
+  margin: 0;
+  color: var(--fg);
+  background: var(--bg2) !important;
+  box-sizing: border-box;
+}
+
+input:focus {
+  text-decoration: none;
+}
+
+
+
+/* widgets */
+
+.widgets {
+  grid-area: widgets;
+  box-sizing: border-box;
+  padding: 1rem;
+  padding-bottom: 0;
+}
+
+
+
+/* nav */
+
+nav {
+  grid-area: nav;
+  box-sizing: border-box;
+  padding: 1rem;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-content: start center;
+  gap: .5rem;
+  overflow: auto;
+}
+
+nav ul {
+  display: grid;
+  gap: .5rem;
+}
+
+nav select,
+nav input,
+nav button {
+  width: 100%;
+  border: 0 none;
+  box-sizing: border-box;
+  text-decoration: underline;
+  background: transparent;
+  text-align: start;
+}
+
+nav button,
+nav select {
+  cursor: pointer;
+}
+
+
+
+/* source viewer | message panel */
+
+.viewer, .msg {
+  grid-area: code;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  padding: 1em;
+  overflow: auto;
+}
+
+.viewer > code {
+  font-size: 1rem;
+}
+
+
+
+/* transition */
+
+* {
+  transition: color 1s, background-color 2s;
+}
