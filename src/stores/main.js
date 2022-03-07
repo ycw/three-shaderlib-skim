@@ -22,7 +22,7 @@ export default defineStore("main", () => {
     loadState.value = "pending";
     delete window.__THREE__;
     try {
-      pkg.value = await import(/*@vite-ignore*/`https://cdn.skypack.dev/three@${v}?min`);
+      pkg.value = await import(/*@vite-ignore*/`https://unpkg.com/three@${v}/build/three.module.js`);
       loadState.value = "fulfilled";
       loadError.value = null;
     } catch (e) { // reset
